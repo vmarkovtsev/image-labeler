@@ -6,6 +6,7 @@ Image labeling tool in pure HTML5. Useful for building image classification data
 - No fancy frontend technologies
 - It works blazingly fast and is very convenient
 - More than one label is possible
+- 100% controllable with keyboard, no mouse gestures are required
 
 ## How to run
 
