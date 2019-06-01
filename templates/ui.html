@@ -1,0 +1,139 @@
+<html>
+<head>
+<title>{{ index }} / {{ total }} {{ image }}</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: black;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    #panel {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        padding: 80px 50px 20px 50px;
+        width: 100%;
+        display: flex;
+        background: linear-gradient(transparent 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.9) 100%);
+    }
+    
+    #panel > div:not(:first-child) {
+        margin-left: 50px;
+    }
+    
+    .button {
+        -webkit-appearance: button;
+        -moz-appearance: button;
+        appearance: button;
+
+        text-decoration: none;
+        color: initial;
+    }
+    
+    #controls {
+        display: inline-block;
+    }
+    
+    #controls > a {
+        height: 50px;
+        width: 100px;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 50px;
+        display: inline-block;
+        font-size: 50px;
+    }
+    
+    #controls > a:not(:first-child) {
+        margin-left: 20px;
+    }
+    
+    #labels {
+        color: white;
+        font-size: 20px;
+        height: 50px;
+        line-height: 50px;
+        vertical-align: middle;
+        list-style-type: none;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+    
+    #labels > li {
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    #labels input {
+        margin-top: 4.5px;
+        zoom: 2;
+    }
+</style>
+</head>
+<body onkeydown="keypress(event)">
+<img src="/img/{{ image }}" onmousemove="showHidePanel(this, event)">
+<div id="panel">
+<div id="controls">
+    <a id="previous" href="/{{ previous_image }}" class="button" onclick="submit()">&lt;</a>
+    <a id="next" href="/{{ next_image }}" class="button" onclick="submit()">&gt;</a>
+</div>
+<ul id="labels">
+{% for label in labels %}
+    <li><input type="checkbox" id="label{{ loop.index }}" name="{{ label }}"{% if checked.get(label) %} checked{% endif %}><label for="label{{ loop.index }}">{{ label }}</label></li>
+{% endfor %}
+</ul>
+</div>
+<script>
+
+function showHidePanel(img, e) {
+    let display = "flex";
+    if (e.clientY < img.height / 2) {
+        display = "none";
+    }
+    document.getElementById("panel").style.display = display;
+}
+
+function keypress(e) {
+    let code = parseInt(e.key);
+    if (code === code) {
+        if (code == 0) {
+            code = 10;
+        }
+        let cb = document.getElementById("label" + code);
+        cb.checked = !cb.checked;
+        e.preventDefault();
+        return;
+    }
+    if (e.code == "Space" || e.code == "ArrowRight") {
+        document.getElementById("next").click();
+        e.preventDefault();
+        return;
+    }
+    if (e.code == "Backspace" || e.code == "ArrowLeft") {
+        document.getElementById("previous").click();
+        e.preventDefault();
+        return;
+    }
+}
+
+function submit() {
+    let checked = {};
+    for (let cb of document.getElementsByTagName("input")) {
+        checked[cb.name] = cb.checked;
+    }
+    let req = new XMLHttpRequest();
+    req.open("PUT", "/label/{{ image }}", true);
+    req.setRequestHeader("Content-Type", "application/json");
+    req.send(JSON.stringify(checked));
+}
+
+</script>
+</body>
+</html>
