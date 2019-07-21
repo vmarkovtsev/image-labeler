@@ -80,7 +80,8 @@ def ui(file):
 
 @app.route("/img/<file>")
 def image(file):
-    return Response(open(app.dirname / file, "rb"))
+    # image/jpeg
+    return Response(open(app.dirname / file, "rb"), mimetype="image/jpeg")
 
 
 @app.route("/label/<file>", methods=["PUT"])
