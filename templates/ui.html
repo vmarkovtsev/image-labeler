@@ -28,33 +28,6 @@
         margin-left: 50px;
     }
     
-    .button {
-        -webkit-appearance: button;
-        -moz-appearance: button;
-        appearance: button;
-
-        text-decoration: none;
-        color: initial;
-    }
-    
-    #controls {
-        display: inline-block;
-    }
-    
-    #controls > a {
-        height: 50px;
-        width: 80px;
-        text-align: center;
-        vertical-align: middle;
-        line-height: 50px;
-        display: inline-block;
-        font-size: 50px;
-    }
-    
-    #controls > a:not(:first-child) {
-        margin-left: 20px;
-    }
-    
     #labels {
         color: white;
         font-size: 20px;
@@ -62,8 +35,8 @@
         line-height: 50px;
         vertical-align: middle;
         list-style-type: none;
-        margin-top: 0;
-        margin-bottom: 0;
+        margin: 0;
+        padding: 0;
     }
     
     #labels > li {
@@ -80,10 +53,6 @@
 <body onkeydown="keypress(event)">
 <img src="/img/{{ image }}" onmousemove="showHidePanel(this, event)">
 <div id="panel">
-<div id="controls">
-    <a id="previous" href="/{{ previous_image }}" class="button" onclick="submit()">&lt;</a>
-    <a id="next" href="/{{ next_image }}" class="button" onclick="submit()">&gt;</a>
-</div>
 <ul id="labels">
 {% for label in labels %}
     <li><input type="checkbox" id="label{{ loop.index }}" name="{{ label }}"{% if checked.get(label) %} checked{% endif %}><label for="label{{ loop.index }}">{{ label }}</label></li>
@@ -101,7 +70,13 @@ function showHidePanel(img, e) {
 }
 
 function keypress(e) {
-    let code = parseInt(e.key);
+    let key = e.key;
+    if (key === "-") {
+        key = "11";
+    } else if (key === "=") {
+        key = "12";
+    }
+    let code = parseInt(key);
     if (code === code) {
         if (code == 0) {
             code = 10;
@@ -112,12 +87,12 @@ function keypress(e) {
         return;
     }
     if (e.code == "Space" || e.code == "ArrowRight") {
-        document.getElementById("next").click();
+        nextImage();
         e.preventDefault();
         return;
     }
     if (e.code == "Backspace" || e.code == "ArrowLeft") {
-        document.getElementById("previous").click();
+        prevImage();
         e.preventDefault();
         return;
     }
@@ -132,6 +107,16 @@ function submit() {
     req.open("PUT", "/label/{{ image }}", true);
     req.setRequestHeader("Content-Type", "application/json");
     req.send(JSON.stringify(checked));
+}
+
+function nextImage() {
+    window.location.href = "{{ next_image }}";
+    submit();
+}
+
+function prevImage() {
+    window.location.href = "{{ previous_image }}";
+    submit();
 }
 
 </script>
